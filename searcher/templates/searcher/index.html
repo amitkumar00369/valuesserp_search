@@ -1,0 +1,98 @@
+{% extends "searcher/base.html" %}
+{% load static %}
+{% block content %}
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Multi-query Search</h5>
+        {% if error %}
+          <div class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+        {% endif %}
+        <form id="searchForm" method="post" novalidate>
+          {% csrf_token %}
+          <input type="hidden" name="queries" id="queriesInput" />
+          <div id="fieldsContainer" class="mb-3">
+            <!-- Dynamic fields inserted here -->
+          </div>
+          <div class="d-flex gap-2 mb-3">
+            <button type="button" id="addFieldBtn" class="btn btn-outline-primary">+ Add query</button>
+            <button type="button" id="removeFieldBtn" class="btn btn-outline-secondary">- Remove</button>
+            <button type="submit" class="btn btn-primary ms-auto">Search</button>
+          </div>
+        </form>
+        <small class="text-muted">Add multiple queries and click Search. Minimum 1 query required.</small>
+      </div>
+    </div>
+ 
+    {% if results %}
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex">
+            <h5 class="card-title">Results</h5>
+            <a href="{% url 'download_csv' %}" class="btn btn-success btn-sm ms-auto">Download CSV</a>
+          </div>
+          <hr/>
+          {% for block in results %}
+            <h6 class="mt-3">Query: <small class="text-muted">{{ block.query }}</small></h6>
+            {% if block.results %}
+              <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Link</th>
+                      <th>Snippet</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for r in block.results %}
+                      <tr>
+                        <td>{{ r.title }}</td>
+                        <td><a href="{{ r.link }}" target="_blank" rel="noopener noreferrer">{{ r.link|truncatechars:60 }}</a></td>
+                        <td>{{ r.snippet|truncatechars:140 }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="alert alert-warning">No results found for this query.</div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+ 
+{% block scripts %}
+<script src="{% static 'searcher/js/dynamic_fields.js' %}"></script>
+<script>
+  // configure initial field
+  window.addEventListener('DOMContentLoaded', () => {
+    DynamicFields.init({ minFields: 1 });
+    // On submit, fill hidden input with newline separated values
+    document.getElementById('searchForm').addEventListener('submit', (e) => {
+      const queries = DynamicFields.getValues().filter(Boolean).map(s => s.trim());
+      if (queries.length === 0) {
+        e.preventDefault();
+        alert('Please add at least one query (2+ characters).');
+        return;
+      }
+      // minimal validation
+      for (const q of queries) {
+        if (q.length < 2) {
+          e.preventDefault();
+          alert('Each query must be at least 2 characters.');
+          return;
+        }
+      }
+      document.getElementById('queriesInput').value = queries.join('\n');
+    });
+  });
+</script>
+{% endblock %}
