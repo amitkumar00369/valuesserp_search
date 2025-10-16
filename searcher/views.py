@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .forms import MultiSearchForm
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt  # csrf in templates present
+# from django.views.decorators.csrf import csrf_exempt  # csrf in templates present
 from dotenv import load_dotenv
 load_dotenv()
 import os
@@ -17,12 +17,12 @@ def call_valueserp(query):
     api_key = os.getenv("VALUESSERP_API_KEY")
     if not api_key:
         raise RuntimeError("API key missing (VALUESERP_API_KEY)")
-    params = {"q": query, "api_key": api_key, "num": 10}  # adjust as needed
+    params = {"q": query, "api_key": api_key, "num": 10} 
     resp = requests.get(VALUESERP_BASE, params=params, timeout=10)
     if resp.status_code != 200:
         raise RuntimeError(f"ValueSERP API error: {resp.status_code} {resp.text}")
     data = resp.json()
-    # ValueSERP JSON structure: it's flexible; commonly results under data.get('organic', [])
+
     results = []
     organic = data.get("organic_results") or data.get("organic", []) or data.get("results") or []
     for item in organic:
