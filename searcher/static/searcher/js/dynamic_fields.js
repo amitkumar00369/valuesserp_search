@@ -1,4 +1,4 @@
-// Simple dynamic fields manager
+
 const DynamicFields = (function () {
     let container = null;
     let minFields = 1;
@@ -19,7 +19,7 @@ const DynamicFields = (function () {
         init: function (opts) {
             minFields = opts.minFields || 1;
             container = document.getElementById('fieldsContainer');
-            // start with one field
+           
             if (!container.querySelector('input')) {
                 container.appendChild(createField(''));
             }

@@ -15,7 +15,7 @@
           {% csrf_token %}
           <input type="hidden" name="queries" id="queriesInput" />
           <div id="fieldsContainer" class="mb-3">
-            <!-- Dynamic fields inserted here -->
+
           </div>
           <div class="d-flex gap-2 mb-3">
             <button type="button" id="addFieldBtn" class="btn btn-outline-primary">+ Add query</button>
@@ -72,10 +72,10 @@
 {% block scripts %}
 <script src="{% static 'searcher/js/dynamic_fields.js' %}"></script>
 <script>
-  // configure initial field
+
   window.addEventListener('DOMContentLoaded', () => {
     DynamicFields.init({ minFields: 1 });
-    // On submit, fill hidden input with newline separated values
+ 
     document.getElementById('searchForm').addEventListener('submit', (e) => {
       const queries = DynamicFields.getValues().filter(Boolean).map(s => s.trim());
       if (queries.length === 0) {
@@ -83,7 +83,7 @@
         alert('Please add at least one query (2+ characters).');
         return;
       }
-      // minimal validation
+
       for (const q of queries) {
         if (q.length < 2) {
           e.preventDefault();

@@ -15,6 +15,7 @@ import os
 VALUESERP_BASE  = os.getenv('base_url')
 def call_valueserp(query):
     api_key = os.getenv("VALUESSERP_API_KEY")
+    print(api_key)
     if not api_key:
         raise RuntimeError("API key missing (VALUESERP_API_KEY)")
     params = {"q": query, "api_key": api_key, "num": 10} 
